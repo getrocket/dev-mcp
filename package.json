@@ -1,7 +1,6 @@
 {
     "name": "@getrocket/dev-mcp",
     "version": "0.1.0",
-    "private": true,
     "description": "Consolidated MCP server for Rocket dev tools (Postgres, ClickHouse, GraphQL, BigQuery)",
     "main": "build/index.js",
     "bin": {
@@ -31,6 +30,11 @@
         "tsx": "^4.21.0",
         "typescript": "^5.9.3"
     },
+    "files": [
+        "build",
+        "package.json",
+        "README.md"
+    ],
     "publishConfig": {
         "registry": "https://npm.pkg.github.com"
     }
