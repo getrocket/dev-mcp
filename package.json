@@ -13,6 +13,7 @@
     "scripts": {
         "clean": "rimraf build",
         "build": "yarn clean && tsc -p .",
+        "prepare": "tsc -p .",
         "start": "node build/index.js",
         "dev": "tsx src/index.ts"
     },
@@ -20,19 +21,20 @@
         "@clickhouse/client": "^1.17.0",
         "@google-cloud/bigquery": "^8.1.1",
         "@modelcontextprotocol/sdk": "^1.26.0",
+        "@types/node": "^22.7.5",
+        "@types/pg": "^8.16.0",
         "pg": "^8.18.0",
+        "typescript": "^5.9.3",
         "zod": "^4.3.6"
     },
     "devDependencies": {
-        "@types/node": "^22.7.5",
-        "@types/pg": "^8.16.0",
         "rimraf": "^6.1.2",
-        "tsx": "^4.21.0",
-        "typescript": "^5.9.3"
+        "tsx": "^4.21.0"
     },
     "files": [
         "build",
-        "package.json",
+        "src",
+        "tsconfig.json",
         "README.md"
     ],
     "publishConfig": {
