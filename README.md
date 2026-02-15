@@ -4,15 +4,6 @@ Consolidated MCP server for Rocket dev tools. Provides read-only access to Postg
 
 ## Install
 
-Requires a `.npmrc` with GitHub Packages auth:
-
-```
-@getrocket:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=ghp_...
-```
-
-Then:
-
 ```bash
 npx @getrocket/dev-mcp@latest
 ```
