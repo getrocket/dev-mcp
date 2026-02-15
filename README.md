@@ -2,36 +2,28 @@
 
 Consolidated MCP server for Rocket dev tools. Provides read-only access to PostgreSQL, ClickHouse, GraphQL (Hasura), and BigQuery from any MCP client.
 
-## Setup
+## Install
 
-```bash
-yarn install
-yarn build
+Requires a `.npmrc` with GitHub Packages auth:
+
+```
+@getrocket:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=ghp_...
 ```
 
-## Configuration
+Then:
 
-Tools are conditionally registered based on which env vars are present. Set only the ones you need.
-
-| Env var | Tool enabled | Required |
-|---|---|---|
-| `POSTGRES_CONNECTION_STRING` | `sql_query` | For Postgres |
-| `CLICKHOUSE_URL` | `clickhouse_query` | For ClickHouse |
-| `GRAPHQL_ENDPOINT` | `graphql_query` | For GraphQL |
-| `GRAPHQL_ADMIN_SECRET` | — | Optional (Hasura auth) |
-| `GRAPHQL_ROLE` | — | Optional (Hasura role) |
-| `GOOGLE_APPLICATION_CREDENTIALS` | `bigquery_query` | For BigQuery |
-| `MCP_SERVER_ENV` | — | Optional (default: `dev`) |
-
-At least one backend must be configured or the server will refuse to start.
+```bash
+npx @getrocket/dev-mcp@latest
+```
 
 ## MCP client config
 
 ```json
 {
     "dev-mcp": {
-        "command": "node",
-        "args": ["/path/to/dev-mcp/build/index.js"],
+        "command": "npx",
+        "args": ["@getrocket/dev-mcp@latest"],
         "env": {
             "POSTGRES_CONNECTION_STRING": "...",
             "CLICKHOUSE_URL": "...",
@@ -43,17 +35,19 @@ At least one backend must be configured or the server will refuse to start.
 }
 ```
 
-Or via npx once published to GitHub Packages:
+Only include the env vars for the backends you need. At least one backend must be configured or the server will refuse to start.
 
-```json
-{
-    "dev-mcp": {
-        "command": "npx",
-        "args": ["@getrocket/dev-mcp@latest"],
-        "env": { ... }
-    }
-}
-```
+## Environment variables
+
+| Env var | Tool enabled | Required |
+|---|---|---|
+| `POSTGRES_CONNECTION_STRING` | `sql_query` | For Postgres |
+| `CLICKHOUSE_URL` | `clickhouse_query` | For ClickHouse |
+| `GRAPHQL_ENDPOINT` | `graphql_query` | For GraphQL |
+| `GRAPHQL_ADMIN_SECRET` | — | Optional (Hasura auth) |
+| `GRAPHQL_ROLE` | — | Optional (Hasura role) |
+| `GOOGLE_APPLICATION_CREDENTIALS` | `bigquery_query` | For BigQuery |
+| `MCP_SERVER_ENV` | — | Optional (default: `dev`) |
 
 ## Tools
 
@@ -103,15 +97,20 @@ Execute read-only SQL against Google BigQuery. Requires a read-only service acco
 
 Results are returned as a single content block with a metadata header and markdown table. If the serialized result exceeds 50 KB, full results are written to a temp file (`$TMPDIR/dev-mcp-results/`) and the response includes the file path for on-demand reading. Temp files older than 1 hour are cleaned up automatically.
 
-## Publishing
+## Development
 
 ```bash
-npm publish --registry=https://npm.pkg.github.com
+yarn install
+yarn build
+yarn dev  # run with tsx
 ```
 
-Requires `.npmrc` with a GitHub token:
+## Publishing
 
-```
-@getrocket:registry=https://npm.pkg.github.com
-//npm.pkg.github.com/:_authToken=ghp_...
+Publishes automatically via GitHub Actions when a version tag is pushed:
+
+```bash
+# bump version in package.json, then:
+git tag v0.2.0
+git push origin v0.2.0
 ```
