@@ -19,9 +19,11 @@ let bqClient: BigQuery | null = null;
 export const registerBigqueryTools = async (server: McpServer, config: AppConfig) => {
     const bqConfig = config.bigquery!;
 
-    bqClient = new BigQuery({
-        keyFilename: bqConfig.credentialsPath,
-    });
+    bqClient = new BigQuery(
+        bqConfig.credentials
+            ? { credentials: bqConfig.credentials as { client_email?: string; private_key?: string } }
+            : { keyFilename: bqConfig.credentialsPath },
+    );
 
     await verifyReadOnly(bqClient);
 

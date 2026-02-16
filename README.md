@@ -37,7 +37,7 @@ Only include the env vars for the backends you need. At least one backend must b
 | `GRAPHQL_ENDPOINT` | `graphql_query` | For GraphQL |
 | `GRAPHQL_ADMIN_SECRET` | — | Optional (Hasura auth) |
 | `GRAPHQL_ROLE` | — | Optional (Hasura role) |
-| `GOOGLE_APPLICATION_CREDENTIALS` | `bigquery_query` | For BigQuery |
+| `GOOGLE_APPLICATION_CREDENTIALS` | `bigquery_query` | For BigQuery (file path or JSON string) |
 | `MCP_SERVER_ENV` | — | Optional (default: `dev`) |
 
 ## Tools

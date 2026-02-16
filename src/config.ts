@@ -3,7 +3,7 @@ export interface AppConfig {
     postgres?: { connectionString: string };
     clickhouse?: { url: string };
     graphql?: { endpoint: string; adminSecret?: string; role?: string };
-    bigquery?: { credentialsPath: string };
+    bigquery?: { credentialsPath?: string; credentials?: Record<string, unknown> };
 }
 
 export const loadConfig = (): AppConfig => {
@@ -29,7 +29,16 @@ export const loadConfig = (): AppConfig => {
     }
 
     if (env.GOOGLE_APPLICATION_CREDENTIALS) {
-        config.bigquery = { credentialsPath: env.GOOGLE_APPLICATION_CREDENTIALS };
+        const val = env.GOOGLE_APPLICATION_CREDENTIALS.trim();
+        if (val.startsWith('{')) {
+            try {
+                config.bigquery = { credentials: JSON.parse(val) };
+            } catch {
+                throw new Error('GOOGLE_APPLICATION_CREDENTIALS looks like JSON but failed to parse');
+            }
+        } else {
+            config.bigquery = { credentialsPath: val };
+        }
     }
 
     return config;
