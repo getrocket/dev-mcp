@@ -1,6 +1,6 @@
 {
     "name": "@getrocket/dev-mcp",
-    "version": "0.1.0",
+    "version": "0.1.2",
     "description": "Consolidated MCP server for Rocket dev tools (Postgres, ClickHouse, GraphQL, BigQuery)",
     "main": "build/index.js",
     "bin": {

@@ -2,7 +2,7 @@ export interface AppConfig {
     environment: string;
     postgres?: { connectionString: string };
     clickhouse?: { url: string };
-    graphql?: { endpoint: string; adminSecret?: string; role?: string };
+    graphql?: { endpoint: string; headers?: Record<string, string> };
     bigquery?: { credentialsPath?: string; credentials?: Record<string, unknown> };
 }
 
@@ -21,10 +21,17 @@ export const loadConfig = (): AppConfig => {
     }
 
     if (env.GRAPHQL_ENDPOINT) {
+        let headers: Record<string, string> | undefined;
+        if (env.GRAPHQL_HEADERS) {
+            try {
+                headers = JSON.parse(env.GRAPHQL_HEADERS);
+            } catch {
+                throw new Error('GRAPHQL_HEADERS must be a valid JSON object of header key-value pairs');
+            }
+        }
         config.graphql = {
             endpoint: env.GRAPHQL_ENDPOINT,
-            adminSecret: env.GRAPHQL_ADMIN_SECRET,
-            role: env.GRAPHQL_ROLE,
+            headers,
         };
     }
 

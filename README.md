@@ -1,6 +1,6 @@
 # @getrocket/dev-mcp
 
-Consolidated MCP server for Rocket dev tools. Provides read-only access to PostgreSQL, ClickHouse, GraphQL (Hasura), and BigQuery from any MCP client.
+Consolidated MCP server for Rocket dev tools. Provides read-only access to PostgreSQL, ClickHouse, GraphQL, and BigQuery from any MCP client.
 
 ## Install
 
@@ -19,7 +19,7 @@ npx @getrocket/dev-mcp@latest
             "POSTGRES_CONNECTION_STRING": "...",
             "CLICKHOUSE_URL": "...",
             "GRAPHQL_ENDPOINT": "...",
-            "GRAPHQL_ADMIN_SECRET": "...",
+            "GRAPHQL_HEADERS": "{\"x-hasura-admin-secret\": \"...\"}",
             "GOOGLE_APPLICATION_CREDENTIALS": "/path/to/service-account.json"
         }
     }
@@ -35,8 +35,7 @@ Only include the env vars for the backends you need. At least one backend must b
 | `POSTGRES_CONNECTION_STRING` | `sql_query` | For Postgres |
 | `CLICKHOUSE_URL` | `clickhouse_query` | For ClickHouse |
 | `GRAPHQL_ENDPOINT` | `graphql_query` | For GraphQL |
-| `GRAPHQL_ADMIN_SECRET` | — | Optional (Hasura auth) |
-| `GRAPHQL_ROLE` | — | Optional (Hasura role) |
+| `GRAPHQL_HEADERS` | — | Optional JSON object of custom headers |
 | `GOOGLE_APPLICATION_CREDENTIALS` | `bigquery_query` | For BigQuery (file path or JSON string) |
 | `MCP_SERVER_ENV` | — | Optional (default: `dev`) |
 
@@ -65,13 +64,14 @@ Execute read-only ClickHouse queries.
 
 ### `graphql_query`
 
-Execute GraphQL queries against Hasura.
+Execute GraphQL queries against the configured endpoint.
 
 | Param | Type | Description |
 |---|---|---|
 | `query` | string | GraphQL query or mutation |
 | `operationName` | string? | Operation name |
 | `variables` | object? | Query variables |
+| `headers` | object? | Per-request headers (overrides `GRAPHQL_HEADERS` defaults) |
 | `timeoutMs` | number? | Timeout in ms (1000–300000, default 30000) |
 
 ### `bigquery_query`

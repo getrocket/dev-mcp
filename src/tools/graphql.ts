@@ -9,6 +9,7 @@ const graphqlQueryInputShape = {
     query: z.string().min(1, 'GraphQL query must be provided').describe('The GraphQL query or mutation to execute.'),
     operationName: z.string().min(1).optional().describe('Operation name (if the document contains multiple operations)'),
     variables: z.record(z.string(), z.unknown()).optional().describe('Variables to pass to the query'),
+    headers: z.record(z.string(), z.string()).optional().describe('Custom headers to include in the request (overrides any defaults from GRAPHQL_HEADERS)'),
     timeoutMs: z.number().int().positive().optional().describe('Request timeout in milliseconds (1000–300000, default 30000)'),
 };
 
@@ -17,25 +18,18 @@ const graphqlQueryInputSchema = z.object(graphqlQueryInputShape);
 export const registerGraphqlTools = (server: McpServer, config: AppConfig) => {
     const gqlConfig = config.graphql!;
 
-    const buildHeaders = (): Record<string, string> => {
-        const headers: Record<string, string> = {
-            'Content-Type': 'application/json',
-            'x-client-name': `${config.environment}-mcp-graphql`,
-        };
-        if (gqlConfig.adminSecret) {
-            headers['x-hasura-admin-secret'] = gqlConfig.adminSecret;
-        }
-        if (gqlConfig.role) {
-            headers['x-hasura-role'] = gqlConfig.role;
-        }
-        return headers;
-    };
+    const buildHeaders = (overrides?: Record<string, string>): Record<string, string> => ({
+        'Content-Type': 'application/json',
+        'x-client-name': `${config.environment}-mcp-graphql`,
+        ...gqlConfig.headers,
+        ...overrides,
+    });
 
     server.registerTool(
         'graphql_query',
         {
-            title: 'GraphQL Query (Hasura)',
-            description: `Execute GraphQL queries against the Hasura endpoint.
+            title: 'GraphQL Query',
+            description: `Execute GraphQL queries against the configured endpoint.
 
 Example:
   query { users(limit: 10) { id name email } }
@@ -44,7 +38,9 @@ Example:
 Notes:
   - Pass variables as a JSON object in the "variables" field
   - Use operationName when your document has multiple operations
-  - Queries are automatically timed out (default 30s, max 5min)`,
+  - Queries are automatically timed out (default 30s, max 5min)
+  - Custom headers can be configured via the GRAPHQL_HEADERS env var
+  - Per-request header overrides can be passed via the "headers" field`,
             inputSchema: graphqlQueryInputShape,
         },
         async (input) => {
@@ -58,7 +54,7 @@ Notes:
             try {
                 const response = await fetch(gqlConfig.endpoint, {
                     method: 'POST',
-                    headers: buildHeaders(),
+                    headers: buildHeaders(parsed.headers),
                     body: JSON.stringify({
                         query: parsed.query,
                         operationName: parsed.operationName,
